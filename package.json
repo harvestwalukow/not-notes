@@ -1,0 +1,27 @@
+{
+  "name": "noest",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A fast, installable notes app with optional Supabase sync.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harvestwalukow/noest.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@supabase/supabase-js": "^2.112.3",
+    "@vitejs/plugin-react": "latest",
+    "lucide-react": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "typescript": "latest",
+    "vite": "latest"
+  }
+}

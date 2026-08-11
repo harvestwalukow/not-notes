@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env*
+!.env.example
+.vercel/
+*.log
+
+# Local design and development captures
+/design-reference.png
+/noest-*.png
+
+.vercel
