@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   AlignLeft, Bold, CheckSquare, ChevronDown, ChevronLeft, Cloud, FileText, Folder,
   FolderPlus, Grid2X2, Italic, Link, List, ListOrdered, Menu, Moon, MoreHorizontal,
-  PanelLeftClose, PanelLeftOpen, Pin, Plus, Search, Share2, Sparkles, Sun, Trash2,
+  PanelLeftClose, PanelLeftOpen, Pin, Plus, Search, Share2, Sun, Trash2,
   Underline, X, CircleUserRound, CloudOff, RefreshCw, Pencil, AlertTriangle,
 } from 'lucide-react'
 import { starterFolders, starterNotes } from './data'
@@ -72,7 +72,7 @@ function Sidebar({ folders, activeFolder, setActiveFolder, createFolder, renameF
   const openMenu = (event, folder) => { event.preventDefault(); event.stopPropagation(); setFolderMenu(folderMenu === folder.id ? null : folder.id) }
   return (
     <aside className={`sidebar ${sidebarOpen ? 'mobile-open' : ''}`}>
-      <div className="brand-row"><div className="brand-mark"><Sparkles size={15} /></div><span>Noest</span><button className="mobile-close" onClick={closeMobile} aria-label="Close menu"><X size={20}/></button></div>
+      <div className="brand-row"><span>Noest</span><button className="mobile-close" onClick={closeMobile} aria-label="Close menu"><X size={20}/></button></div>
       <nav aria-label="Folders">
         <div className="folder-group">
           {system.map(folder => <button key={folder.id} className={`folder-row ${activeFolder === folder.id ? 'selected' : ''}`} onClick={() => choose(folder.id)}><span className="folder-name"><FolderIcon type={folder.icon}/>{folder.name}</span><span className="folder-count">{folder.count}</span></button>)}
