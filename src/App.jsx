@@ -12,7 +12,7 @@ import { useCloudSync } from './useCloudSync'
 const STORAGE_KEY = 'noest-state-v2'
 
 function IconButton({ label, children, active = false, onClick, className = '' }) {
-  return <button className={`icon-button ${active ? 'active' : ''} ${className}`} aria-label={label} title={label} onClick={onClick}>{children}</button>
+  return <button className={`noest-icon-button ${active ? 'active' : ''} ${className}`} aria-label={label} title={label} onClick={onClick}>{children}</button>
 }
 
 function FolderIcon({ type, size = 18 }) {
