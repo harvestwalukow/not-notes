@@ -2,6 +2,23 @@ import { useEffect, useRef, useState } from 'react'
 import { cloudConfigured, supabase } from './supabase'
 import { starterFolders, starterNotes } from './data'
 
+function noteVersion(note) {
+  return Number(note?.updatedAt || 0)
+}
+
+function mergeNotes(localNotes = [], incomingNotes = []) {
+  const localById = new Map(localNotes.map(note => [note.id, note]))
+  let localWins = false
+
+  for (const incoming of incomingNotes) {
+    const local = localById.get(incoming.id)
+    if (!local || noteVersion(incoming) >= noteVersion(local)) localById.set(incoming.id, incoming)
+    else localWins = true
+  }
+
+  return { notes: [...localById.values()], localWins }
+}
+
 export function useCloudSync({ folders, notes, dark, setFolders, setNotes, setDark }) {
   const [user, setUser] = useState(null)
   const [status, setStatus] = useState(cloudConfigured ? 'signed-out' : 'local')
@@ -53,9 +70,10 @@ export function useCloudSync({ folders, notes, dark, setFolders, setNotes, setDa
       }
 
       if (data?.payload) {
-        skipNextSave.current = true
+        const merged = mergeNotes(latestPayload.current.notes, data.payload.notes || [])
+        skipNextSave.current = !merged.localWins
         setFolders(data.payload.folders || [])
-        setNotes(data.payload.notes || [])
+        setNotes(merged.notes)
         setDark(Boolean(data.payload.dark))
       } else {
         const { error: insertError } = await supabase.from('noest_documents').upsert({
@@ -78,9 +96,10 @@ export function useCloudSync({ folders, notes, dark, setFolders, setNotes, setDa
         }, event => {
           const incoming = event.new?.payload
           if (!incoming || JSON.stringify(incoming) === JSON.stringify(latestPayload.current)) return
-          skipNextSave.current = true
+          const merged = mergeNotes(latestPayload.current.notes, incoming.notes || [])
+          skipNextSave.current = !merged.localWins
           setFolders(incoming.folders || [])
-          setNotes(incoming.notes || [])
+          setNotes(merged.notes)
           setDark(Boolean(incoming.dark))
           setStatus('synced')
         })
@@ -107,7 +126,7 @@ export function useCloudSync({ folders, notes, dark, setFolders, setNotes, setDa
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' })
       setStatus(error ? 'error' : 'synced')
-    }, 650)
+    }, 350)
     return () => window.clearTimeout(timer)
   }, [dark, folders, notes, user?.id])
 

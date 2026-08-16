@@ -10,7 +10,7 @@ Noest is a fast, installable notes app inspired by the simplicity of native desk
 - Folder creation, renaming, and deletion
 - Search, sorting, pinning, and list or grid views
 - Local persistence with restoration of the last-opened note
-- Optional authenticated Supabase sync across devices
+- Optional authenticated Supabase live sync across devices, with note-level conflict protection
 - Persistent sign-in sessions
 - Responsive mobile interface and dark mode
 - Progressive Web App support for home-screen installation and offline loading
@@ -36,6 +36,8 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
 Then run [`supabase/migrations/001_noest_documents.sql`](supabase/migrations/001_noest_documents.sql) in your Supabase project's SQL editor. The migration enables row-level security so authenticated users can access only their own document.
+
+When signed in, edits are written to Supabase shortly after typing and delivered to other open devices through Supabase Realtime. Each note carries a local edit timestamp so a stale device cannot overwrite a newer note while it is hydrating.
 
 ## Build
 
