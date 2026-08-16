@@ -328,7 +328,7 @@ function NoteEditor({ note, updateNoteBody, deleteNote, onBack, mobileView, save
     if (editor.innerHTML !== note.body) editor.innerHTML = note.body
     editor.querySelectorAll('ul.checklist').forEach(list => setChecklist(list, true))
     editor.scrollTop = editor.scrollHeight
-  }, [note?.id])
+  }, [note?.id, note?.body])
   const save = () => editorRef.current && note && updateNoteBody(note.id, editorRef.current.innerHTML)
   const rememberSelection = () => {
     const selection = window.getSelection()
@@ -453,7 +453,7 @@ function App() {
   }, [activeFolder, notes, selectedNote])
 
   const cloud = useCloudSync({ folders, notes, dark, setFolders, setNotes, setDark })
-  const saveLabel = cloud.status === 'synced' ? 'Synced to cloud' : cloud.status === 'saving' ? 'Syncing…' : cloud.status === 'loading' ? 'Loading cloud notes…' : cloud.status === 'error' ? 'Sync needs attention' : 'Saved locally'
+  const saveLabel = cloud.status === 'synced' ? 'Live sync on' : cloud.status === 'saving' ? 'Syncing…' : cloud.status === 'loading' ? 'Loading cloud notes…' : cloud.status === 'error' ? 'Sync needs attention' : 'Saved locally'
 
   const visibleNotes = useMemo(() => {
     let result = activeFolder === 'all' ? notes : activeFolder === 'notes' ? notes.filter(n => n.folder !== 'travel') : ['japan-october', 'kyoto', 'tokyo', 'packing'].includes(activeFolder) ? notes.filter(n => n.id === activeFolder) : notes.filter(n => n.folder === activeFolder)
@@ -472,8 +472,8 @@ function App() {
   const currentNote = notes.find(n => n.id === selectedNote)
   const chooseFolder = id => { setActiveFolder(id); const first = notes.find(n => id === 'all' || n.id === id || (id === 'notes' ? n.folder !== 'travel' : n.folder === id)); if (first) setSelectedNote(first.id); setMobileView('list') }
   const chooseNote = id => { setSelectedNote(id); setMobileView('editor') }
-  const newNote = () => { const activeFolderData = folders.find(folder => folder.id === activeFolder); const folder = activeFolderData?.custom && !activeFolderData.child ? activeFolder : 'notes'; const id = `note-${Date.now()}`; const fresh = { id, folder, title: 'New Note', date: 'Today', time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), pinned: false, preview: 'Start writing…', body: '<h1>New Note</h1><p class="lead">Start writing…</p>' }; setNotes(prev => [fresh, ...prev]); setActiveFolder(folder); setSelectedNote(id); setMobileView('editor') }
-  const updateNoteBody = (id, body) => setNotes(prev => prev.map(n => { if (n.id !== id) return n; const tmp = document.createElement('div'); tmp.innerHTML = body; const title = tmp.querySelector('h1')?.textContent?.trim() || 'New Note'; const preview = [...tmp.querySelectorAll('p, li')].map(el => el.textContent.trim()).find(Boolean) || 'No additional text'; return { ...n, body, title, preview, date: 'Today' } }))
+  const newNote = () => { const activeFolderData = folders.find(folder => folder.id === activeFolder); const folder = activeFolderData?.custom && !activeFolderData.child ? activeFolder : 'notes'; const id = `note-${Date.now()}`; const fresh = { id, folder, title: 'New Note', date: 'Today', time: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), pinned: false, preview: 'Start writing…', body: '<h1>New Note</h1><p class="lead">Start writing…</p>', updatedAt: Date.now() }; setNotes(prev => [fresh, ...prev]); setActiveFolder(folder); setSelectedNote(id); setMobileView('editor') }
+  const updateNoteBody = (id, body) => setNotes(prev => prev.map(n => { if (n.id !== id) return n; const tmp = document.createElement('div'); tmp.innerHTML = body; const title = tmp.querySelector('h1')?.textContent?.trim() || 'New Note'; const preview = [...tmp.querySelectorAll('p, li')].map(el => el.textContent.trim()).find(Boolean) || 'No additional text'; return { ...n, body, title, preview, date: 'Today', updatedAt: Date.now() } }))
   const deleteNote = id => { setNotes(prev => prev.filter(n => n.id !== id)); const next = notes.find(n => n.id !== id); setSelectedNote(next?.id || null); setMobileView('list') }
   const confirmSignOut = async () => {
     await cloud.signOut()
