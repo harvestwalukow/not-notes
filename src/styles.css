@@ -42,6 +42,11 @@ button { border: 0; background: none; cursor: pointer; }
 .note-canvas .checklist input[type="checkbox"] { width: 16px; height: 16px; flex: 0 0 16px; margin: .38em 0 0; accent-color: var(--accent); cursor: pointer; }
 .note-canvas:focus, .note-canvas:focus-visible { outline: none; }
 
+/* Use plain-text style hyphens for unordered notes while keeping nested ULs editable. */
+.note-canvas ul:not(.checklist) { list-style: none; }
+.note-canvas ul:not(.checklist) > li { position: relative; padding-left: 1.15em; }
+.note-canvas ul:not(.checklist) > li::before { content: '-'; position: absolute; left: 0; }
+
 .sidebar, .note-list, .note-canvas {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--muted) 55%, transparent) transparent;

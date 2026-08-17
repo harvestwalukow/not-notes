@@ -156,7 +156,7 @@ function EditorToolbar({ command }) {
       <IconButton label="Underline" onClick={() => command('underline')}><Underline size={17}/></IconButton>
       <span className="toolbar-separator"/>
       <IconButton label="Checklist" onClick={() => command('checklist')}><CheckSquare size={17}/></IconButton>
-      <IconButton label="Bulleted list" onClick={() => command('unorderedList')}><List size={18}/></IconButton>
+      <IconButton label="Hyphen list" onClick={() => command('unorderedList')}><List size={18}/></IconButton>
       <IconButton label="Numbered list" onClick={() => command('orderedList')}><ListOrdered size={18}/></IconButton>
       <IconButton label="Align left" onClick={() => command('justifyLeft')}><AlignLeft size={18}/></IconButton>
       <div className="link-control"><IconButton label="Insert link" active={linkOpen} onClick={() => setLinkOpen(open => !open)}><Link size={17}/></IconButton>{linkOpen && <form className="link-popover" onSubmit={applyLink}><label><span>Link URL</span><input autoFocus type="url" value={linkUrl} onChange={event => setLinkUrl(event.target.value)} onFocus={event => event.target.select()} placeholder="https://example.com" required/></label><div><button type="button" onClick={() => { command('unlink'); setLinkOpen(false) }}>Remove link</button><button type="button" onClick={() => setLinkOpen(false)}>Cancel</button><button className="link-apply" disabled={!linkUrl.trim() || linkUrl.trim() === 'https://'}>Apply</button></div></form>}</div>

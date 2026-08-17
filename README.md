@@ -6,7 +6,7 @@ Noest is a fast, installable notes app inspired by the simplicity of native desk
 
 ## Features
 
-- Rich-text notes with headings, lists, checklists, quotes, links, and formatting
+- Rich-text notes with headings, hyphen lists (including nested lists), checklists, quotes, links, and formatting
 - Folder creation, renaming, and deletion
 - Search, sorting, pinning, and list or grid views
 - Local persistence with restoration of the last-opened note
