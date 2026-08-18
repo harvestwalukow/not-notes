@@ -319,6 +319,20 @@ function repairPastedBlocks(editor) {
   }
 }
 
+function selectionElement(editor) {
+  const selection = window.getSelection()
+  if (!selection?.rangeCount || selection.isCollapsed === false || !editor?.contains(selection.anchorNode)) return null
+  const node = selection.anchorNode
+  return node.nodeType === Node.TEXT_NODE ? node.parentElement : node
+}
+
+function caretIsAtEnd(range, block) {
+  const remainder = range.cloneRange()
+  remainder.selectNodeContents(block)
+  remainder.setStart(range.endContainer, range.endOffset)
+  return remainder.toString() === ''
+}
+
 function NoteEditor({ note, updateNoteBody, deleteNote, onBack, mobileView, saveLabel }) {
   const editorRef = useRef(null)
   const selectionRef = useRef(null)
@@ -341,11 +355,66 @@ function NoteEditor({ note, updateNoteBody, deleteNote, onBack, mobileView, save
     selection.removeAllRanges()
     selection.addRange(selectionRef.current)
   }
+  const focusListItem = () => {
+    const item = editorRef.current?.querySelector('ul:not(.checklist) > li:last-child')
+    if (!item) return
+    editorRef.current.focus()
+    const selection = window.getSelection()
+    const range = document.createRange()
+    range.selectNodeContents(item)
+    range.collapse(true)
+    selection.removeAllRanges()
+    selection.addRange(range)
+    selectionRef.current = range.cloneRange()
+  }
   const selectedList = () => {
     const selection = window.getSelection()
     const anchor = selection?.anchorNode
     const element = anchor?.nodeType === Node.TEXT_NODE ? anchor.parentElement : anchor
     return element?.closest?.('ul, ol') || null
+  }
+  const handleEditorKeyDown = event => {
+    const editor = editorRef.current
+    const selection = window.getSelection()
+    const element = selectionElement(editor)
+    if (!editor || !selection?.rangeCount || !element) return
+
+    if (event.key === ' ' && !event.shiftKey && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      const range = selection.getRangeAt(0)
+      const block = element.closest('p, div')
+      const isStandaloneHyphen = block && !block.closest('li') && block.textContent === '-' && caretIsAtEnd(range, block)
+      if (isStandaloneHyphen) {
+        event.preventDefault()
+        block.textContent = ''
+        range.selectNodeContents(block)
+        range.collapse(true)
+        selection.removeAllRanges()
+        selection.addRange(range)
+        document.execCommand('insertUnorderedList')
+        const item = selectionElement(editor)?.closest?.('li') || editor.querySelector('ul:last-of-type > li:last-child')
+        if (item) {
+          item.textContent = ''
+          const caret = document.createRange()
+          caret.selectNodeContents(item)
+          caret.collapse(true)
+          selection.removeAllRanges()
+          selection.addRange(caret)
+        }
+        save()
+        rememberSelection()
+        requestAnimationFrame(focusListItem)
+        return
+      }
+    }
+
+    if (event.key === 'Tab' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      const item = element.closest('li')
+      if (!item || !editor.contains(item)) return
+      event.preventDefault()
+      document.execCommand(event.shiftKey ? 'outdent' : 'indent')
+      save()
+      rememberSelection()
+    }
   }
   const command = (name, value = null) => {
     restoreSelection()
@@ -415,7 +484,7 @@ function NoteEditor({ note, updateNoteBody, deleteNote, onBack, mobileView, save
       <header className="editor-mobile-header"><IconButton label="Back to notes" onClick={onBack}><ChevronLeft size={22}/></IconButton><span>Notes</span><span /></header>
       <EditorToolbar command={command}/>
       <div className="note-date">{note.date === 'Today' ? 'August 11, 2026' : note.date} at {note.time}</div>
-      <div ref={editorRef} className="note-canvas" contentEditable suppressContentEditableWarning onInput={() => { save(); rememberSelection() }} onMouseUp={rememberSelection} onKeyUp={rememberSelection} onBlur={rememberSelection} onClick={handleChecklistClick} onPaste={handlePaste} aria-label={`Editing ${note.title}`}/>
+      <div ref={editorRef} className="note-canvas" contentEditable suppressContentEditableWarning onInput={() => { save(); rememberSelection() }} onKeyDown={handleEditorKeyDown} onMouseUp={rememberSelection} onKeyUp={rememberSelection} onBlur={rememberSelection} onClick={handleChecklistClick} onPaste={handlePaste} aria-label={`Editing ${note.title}`}/>
       <div className="editor-status"><span>{saveLabel}</span><button onClick={() => deleteNote(note.id)}><Trash2 size={15}/>Delete</button></div>
     </main>
   )
