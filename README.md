@@ -39,6 +39,8 @@ Then run [`supabase/migrations/001_noest_documents.sql`](supabase/migrations/001
 
 When signed in, edits are written to Supabase shortly after typing and delivered to other open devices through Supabase Realtime. Each note carries a local edit timestamp so a stale device cannot overwrite a newer note while it is hydrating.
 
+When signed in, edits are written to Supabase shortly after typing and delivered to other open devices through Supabase Realtime. Each note carries a local edit timestamp so a stale device cannot overwrite a newer note while it is hydrating.
+
 ## Build
 
 ```bash
