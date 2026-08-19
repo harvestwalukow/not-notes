@@ -2,7 +2,7 @@
 
 Not Notes is a fast, installable notes app inspired by the simplicity of native desktop notes software. It supports rich-text editing, folders, checklists, dark mode, offline use, and optional cross-device sync through Supabase.
 
-![Not Notes desktop interface](docs/noest-desktop.png)
+![Not Notes desktop interface](docs/not-notes-desktop.png)
 
 ## Features
 
