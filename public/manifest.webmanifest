@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Noest",
-  "short_name": "Noest",
+  "name": "Not iCloud Notes",
+  "short_name": "Not Notes",
   "description": "A quiet place for your thoughts.",
   "start_url": "/",
   "scope": "/",

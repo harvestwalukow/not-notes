@@ -58,7 +58,7 @@ export function useCloudSync({ folders, notes, dark, setFolders, setNotes, setDa
     const hydrate = async () => {
       setStatus('loading')
       const { data, error } = await supabase
-        .from('noest_documents')
+        .from('not_notes_documents')
         .select('payload, updated_at')
         .eq('user_id', user.id)
         .maybeSingle()
@@ -76,7 +76,7 @@ export function useCloudSync({ folders, notes, dark, setFolders, setNotes, setDa
         setNotes(merged.notes)
         setDark(Boolean(data.payload.dark))
       } else {
-        const { error: insertError } = await supabase.from('noest_documents').upsert({
+        const { error: insertError } = await supabase.from('not_notes_documents').upsert({
           user_id: user.id,
           payload: latestPayload.current,
           updated_at: new Date().toISOString(),
@@ -90,9 +90,9 @@ export function useCloudSync({ folders, notes, dark, setFolders, setNotes, setDa
       hydratedFor.current = user.id
       setStatus('synced')
       channel = supabase
-        .channel(`noest-document-${user.id}`)
+        .channel(`not-notes-document-${user.id}`)
         .on('postgres_changes', {
-          event: 'UPDATE', schema: 'public', table: 'noest_documents', filter: `user_id=eq.${user.id}`,
+          event: 'UPDATE', schema: 'public', table: 'not_notes_documents', filter: `user_id=eq.${user.id}`,
         }, event => {
           const incoming = event.new?.payload
           if (!incoming || JSON.stringify(incoming) === JSON.stringify(latestPayload.current)) return
@@ -120,7 +120,7 @@ export function useCloudSync({ folders, notes, dark, setFolders, setNotes, setDa
     }
     setStatus('saving')
     const timer = window.setTimeout(async () => {
-      const { error } = await supabase.from('noest_documents').upsert({
+      const { error } = await supabase.from('not_notes_documents').upsert({
         user_id: user.id,
         payload: { folders, notes, dark },
         updated_at: new Date().toISOString(),

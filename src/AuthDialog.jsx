@@ -32,7 +32,7 @@ export function AuthDialog({ open, onClose }) {
       <section className="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
         <button className="auth-close" onClick={onClose} aria-label="Close"><X size={19}/></button>
         <div className="auth-icon"><Cloud size={22}/></div>
-        <h2 id="auth-title">Sync Noest everywhere</h2>
+        <h2 id="auth-title">Sync Not iCloud Notes everywhere</h2>
         <p>Your notes stay private to your account and update automatically across your devices.</p>
         {!cloudConfigured ? (
           <div className="auth-message error">Cloud sync has not been configured for this deployment yet.</div>
@@ -43,7 +43,7 @@ export function AuthDialog({ open, onClose }) {
             {message && <div className={`auth-message ${message.startsWith('Check') ? '' : 'error'}`}>{message}</div>}
             <button className="auth-primary" disabled={busy}>{busy ? 'Please wait…' : mode === 'sign-in' ? 'Sign In & Sync' : 'Create Account'}</button>
             <button type="button" className="auth-switch" onClick={() => { setMode(mode === 'sign-in' ? 'sign-up' : 'sign-in'); setMessage('') }}>
-              {mode === 'sign-in' ? 'New to Noest? Create an account' : 'Already have an account? Sign in'}
+              {mode === 'sign-in' ? 'New to Not iCloud Notes? Create an account' : 'Already have an account? Sign in'}
             </button>
           </form>
         )}

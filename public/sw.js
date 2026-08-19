@@ -1,4 +1,4 @@
-const CACHE_NAME = 'noest-app-v2'
+const CACHE_NAME = 'not-notes-app-v3'
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
