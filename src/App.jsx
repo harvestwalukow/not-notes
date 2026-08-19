@@ -13,9 +13,9 @@ const STORAGE_KEY = 'not-notes-state-v3'
 
 function AppleMark({ className = '' }) {
   return <svg className={`brand-apple-mark ${className}`} viewBox="0 0 34 34" aria-hidden="true">
-    <defs><mask id="ugly-apple-bite"><rect width="34" height="34" fill="white"/><circle cx="27.5" cy="18" r="2.7" fill="black"/></mask></defs>
-    <path fill="currentColor" mask="url(#ugly-apple-bite)" d="M9.1 13.8c1.5-2.2 4.5-1.8 6.6-.5 1.7-1.5 4.9-1.9 6.7-.1 2.2 2.2 1.3 4.8 3.4 6.6 1.6 1.4.1 5.3-1.7 7.2-1.5 1.6-3 1.7-4.8.9-1.4-.6-2.1-1.2-3.8-.7-2 .7-3.1 1.6-4.7.8-2.2-1.1-3.3-4.2-4.1-6.7-.8-2.6-.9-5.5 2.4-7.5Z"/>
-    <path fill="currentColor" d="M16.9 12.7 18.7 5l5.7-2.2-2.4 6.4-5.1 3.5Z"/>
+    <path fill="currentColor" d="M10.2 13.1c-2.5-1.2-5.8.2-6.7 3.5-.8 2.6.4 4.3-.1 6.5-.5 2.6 1.8 6.6 4.9 7.4 2.5.6 3.7-1.2 6.1-.7 2.2.5 3.1 2.3 5.6 1.5 2.8-.9 3.5-3.7 5.9-5.4 2.7-2 4.4-5.2 2.1-7.1-1.4-1.2-2.5-1-3.4-2.8-1.1-2.3-3.3-3.3-5.4-2.8-1.9.4-2.8 1.4-4.5.9-1.5-.4-2.8-1-4.5-1Z"/>
+    <circle cx="28.4" cy="18.1" r="3.4" fill="#252525"/>
+    <path fill="currentColor" d="M15.2 12.8 17.1 4.2l8-3.1-1.5 6.1-8.4 5.6Z"/>
   </svg>
 }
 
