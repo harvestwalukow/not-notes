@@ -352,7 +352,6 @@ function placeCaretAtStart(element) {
   selection.removeAllRanges()
   selection.addRange(range)
 }
-
 function NoteEditor({ note, updateNoteBody, deleteNote, onBack, mobileView, saveLabel }) {
   const editorRef = useRef(null)
   const selectionRef = useRef(null)
