@@ -1,12 +1,12 @@
 {
-  "name": "noest",
+  "name": "not-notes",
   "private": true,
   "version": "1.0.0",
   "description": "A fast, installable notes app with optional Supabase sync.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/harvestwalukow/noest.git"
+    "url": "https://github.com/harvestwalukow/not-notes.git"
   },
   "type": "module",
   "scripts": {

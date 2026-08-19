@@ -9,10 +9,20 @@ import { starterFolders, starterNotes } from './data'
 import { AuthDialog } from './AuthDialog'
 import { useCloudSync } from './useCloudSync'
 
-const STORAGE_KEY = 'noest-state-v2'
+const STORAGE_KEY = 'not-notes-state-v3'
+
+function AppleMark({ className = '' }) {
+  return <svg className={`brand-apple-mark ${className}`} viewBox="0 0 34 34" aria-hidden="true">
+    <path fill="currentColor" d="M22.9 9.7c-1.8 0-3.2 1.2-4.4 1.2-1.2 0-2.8-1.2-4.6-1.2-3.6 0-7.2 3-7.2 8.2 0 3.2 1.2 6.5 2.8 8.8 1.3 2 2.8 4.1 4.8 4.1 1.8 0 2.4-1.2 4.5-1.2 2.1 0 2.6 1.2 4.5 1.2 2 0 3.3-1.8 4.6-3.8 1.5-2.2 2.1-4.4 2.1-4.5-.1 0-4.1-1.6-4.1-6 0-3.8 3.1-5.6 3.2-5.7-1.8-2.6-4.7-2.9-5.7-2.9-.2 0-.3 0-.5 0Zm-1.1-2.1c.9-1.1 1.6-2.7 1.4-4.3-1.4.1-3.1.9-4.1 2-.9 1-1.7 2.6-1.4 4.2 1.6.1 3.2-.8 4.1-1.9Z"/>
+  </svg>
+}
+
+function BrandLockup() {
+  return <span className="brand-lockup" aria-label="Not iCloud Notes"><span>Not</span><AppleMark/><span className="brand-icloud">IcLoUd</span><span className="brand-notes">Notes</span></span>
+}
 
 function IconButton({ label, children, active = false, onClick, className = '' }) {
-  return <button className={`noest-icon-button ${active ? 'active' : ''} ${className}`} aria-label={label} title={label} onClick={onClick}>{children}</button>
+  return <button className={`not-notes-icon-button ${active ? 'active' : ''} ${className}`} aria-label={label} title={label} onClick={onClick}>{children}</button>
 }
 
 function FolderIcon({ type, size = 18 }) {
@@ -52,7 +62,7 @@ function SignOutDialog({ open, email, onClose, onConfirm }) {
     <div className="folder-dialog-backdrop" role="presentation" onMouseDown={event => event.target === event.currentTarget && onClose()} onKeyDown={event => event.key === 'Escape' && onClose()}>
       <section className="folder-dialog" role="dialog" aria-modal="true" aria-labelledby="signout-dialog-title">
         <div className="folder-dialog-icon"><AlertTriangle size={21}/></div>
-        <h2 id="signout-dialog-title">Sign out of Noest?</h2>
+        <h2 id="signout-dialog-title">Sign out of Not iCloud Notes?</h2>
         <p>You’re signed in as <strong>{email}</strong>. This device will stop syncing until you sign in again.</p>
         <div className="folder-dialog-actions">
           <button type="button" autoFocus onClick={onClose}>Stay Signed In</button>
@@ -72,7 +82,7 @@ function Sidebar({ folders, activeFolder, setActiveFolder, createFolder, renameF
   const openMenu = (event, folder) => { event.preventDefault(); event.stopPropagation(); setFolderMenu(folderMenu === folder.id ? null : folder.id) }
   return (
     <aside className={`sidebar ${sidebarOpen ? 'mobile-open' : ''}`}>
-      <div className="brand-row"><span>Noest</span><button className="mobile-close" onClick={closeMobile} aria-label="Close menu"><X size={20}/></button></div>
+      <div className="brand-row"><BrandLockup/><button className="mobile-close" onClick={closeMobile} aria-label="Close menu"><X size={20}/></button></div>
       <nav aria-label="Folders">
         <div className="folder-group">
           {system.map(folder => <button key={folder.id} className={`folder-row ${activeFolder === folder.id ? 'selected' : ''}`} onClick={() => choose(folder.id)}><span className="folder-name"><FolderIcon type={folder.icon}/>{folder.name}</span><span className="folder-count">{folder.count}</span></button>)}
@@ -333,6 +343,16 @@ function caretIsAtEnd(range, block) {
   return remainder.toString() === ''
 }
 
+function placeCaretAtStart(element) {
+  const selection = window.getSelection()
+  if (!selection) return
+  const range = document.createRange()
+  range.selectNodeContents(element)
+  range.collapse(true)
+  selection.removeAllRanges()
+  selection.addRange(range)
+}
+
 function NoteEditor({ note, updateNoteBody, deleteNote, onBack, mobileView, saveLabel }) {
   const editorRef = useRef(null)
   const selectionRef = useRef(null)
@@ -415,6 +435,31 @@ function NoteEditor({ note, updateNoteBody, deleteNote, onBack, mobileView, save
       save()
       rememberSelection()
     }
+    if (event.key !== 'Enter') return
+    const item = element.closest?.('ul:not(.checklist) > li')
+    const list = item?.parentElement
+    if (!item || !list || item.textContent.trim()) return
+
+    event.preventDefault()
+    const nextItem = item.nextElementSibling
+    const wasLastItem = !nextItem
+    item.remove()
+
+    if (!list.children.length) {
+      const paragraph = document.createElement('p')
+      paragraph.innerHTML = '<br>'
+      list.replaceWith(paragraph)
+      placeCaretAtStart(paragraph)
+    } else if (wasLastItem) {
+      const paragraph = document.createElement('p')
+      paragraph.innerHTML = '<br>'
+      list.parentNode.insertBefore(paragraph, list.nextSibling)
+      placeCaretAtStart(paragraph)
+    } else {
+      placeCaretAtStart(nextItem)
+    }
+    save()
+    rememberSelection()
   }
   const command = (name, value = null) => {
     restoreSelection()
@@ -491,7 +536,7 @@ function NoteEditor({ note, updateNoteBody, deleteNote, onBack, mobileView, save
 }
 
 function App() {
-  const [saved] = useState(() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) } catch { return null } })
+  const [saved] = useState(() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem('noest-state-v2')) } catch { return null } })
   const [folders, setFolders] = useState(saved?.folders || starterFolders)
   const [notes, setNotes] = useState(saved?.notes || starterNotes)
   const [activeFolder, setActiveFolder] = useState(saved?.activeFolder || 'travel')
@@ -565,7 +610,7 @@ function App() {
     <div className={`app ${dark ? 'dark' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <header className="titlebar">
         <div className="traffic-lights" aria-hidden="true"><i/><i/><i/></div>
-        <div className="titlebar-brand">Noest</div>
+        <div className="titlebar-brand"><BrandLockup/></div>
         <IconButton label="Open folders" className="mobile-menu" onClick={() => setMobileSidebar(true)}><Menu size={20}/></IconButton>
         <IconButton label={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'} className="collapse-button" onClick={() => setSidebarCollapsed(v => !v)}>{sidebarCollapsed ? <PanelLeftOpen size={18}/> : <PanelLeftClose size={18}/>}</IconButton>
         <div className="titlebar-actions">
@@ -573,7 +618,7 @@ function App() {
             {cloud.status === 'saving' || cloud.status === 'loading' ? <RefreshCw size={16} className="spinning"/> : cloud.user ? <CircleUserRound size={17}/> : <CloudOff size={17}/>}<span>{cloud.user ? 'Synced' : 'Sync'}</span>
           </button>
           <IconButton label={dark ? 'Use light mode' : 'Use dark mode'} onClick={() => setDark(v => !v)}>{dark ? <Sun size={18}/> : <Moon size={18}/>}</IconButton>
-          <IconButton label="Share note" onClick={() => navigator.clipboard?.writeText(currentNote?.title || 'Noest')}><Share2 size={18}/></IconButton>
+          <IconButton label="Share note" onClick={() => navigator.clipboard?.writeText(currentNote?.title || 'Not iCloud Notes')}><Share2 size={18}/></IconButton>
           <IconButton label="New note" onClick={newNote}><Plus size={20}/></IconButton>
           <div className="more-wrap"><IconButton label="More" onClick={() => setShowMenu(v => !v)}><MoreHorizontal size={20}/></IconButton>{showMenu && <div className="more-menu"><button onClick={() => { togglePin(selectedNote); setShowMenu(false) }}><Pin size={15}/>{currentNote?.pinned ? 'Unpin Note' : 'Pin Note'}</button><button onClick={() => { deleteNote(selectedNote); setShowMenu(false) }}><Trash2 size={15}/>Delete Note</button></div>}</div>
         </div>

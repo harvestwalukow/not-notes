@@ -1,5 +1,18 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://not-notes.vercel.app/$1",
+      "permanent": true,
+      "has": [
+        {
+          "type": "host",
+          "value": "noest.vercel.app"
+        }
+      ]
+    }
+  ]
 }
